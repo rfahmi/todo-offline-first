@@ -23,9 +23,8 @@ jobs:
 
       - name: Install and Build
         run: |
-          export CI=false
-          export REACT_APP_DB_REMOTE = admin:secret@194.163.40.171:5984
-          npm install
+          export REACT_APP_DB_REMOTE = "admin:secret@194.163.40.171:5984"
+          CI=false npm install
           npm run build
         env:
           CI: true
