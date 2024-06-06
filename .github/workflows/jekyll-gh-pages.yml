@@ -23,6 +23,8 @@ jobs:
 
       - name: Install and Build
         run: |
+          CI=false
+          REACT_APP_DB_REMOTE = 'http://admin:secret@194.163.40.171:5984'
           npm install
           npm run build
         env:
