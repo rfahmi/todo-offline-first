@@ -56,28 +56,30 @@ const InputComponent = ({ label, value, setValue }) => {
 };
 
 const Form = () => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-
-  const [isSync, setIsSync] = useState(false);
-
-  const localDB = new PouchDB("form");
-  const remoteDB = new PouchDB(process.env.REACT_APP_DB_REMOTE + "/form");
-
-  const fetchData = async () => {
-    try {
-      const result = await localDB.allDocs({
-        include_docs: true,
-      });
-      const data = result.rows.map((row) => row.doc);
-      if (data.length > 0) {
-        setName(data[0].name);
-        setEmail(data[0].email);
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [docId, setDocId] = useState(null);
+  
+    const [isSync, setIsSync] = useState(false);
+  
+    const localDB = new PouchDB("form");
+    const remoteDB = new PouchDB(process.env.REACT_APP_DB_REMOTE + "/form");
+  
+    const fetchData = async () => {
+      try {
+        const result = await localDB.allDocs({
+          include_docs: true,
+        });
+        const data = result.rows.map((row) => row.doc);
+        if (data.length > 0) {
+          setName(data[0].name);
+          setEmail(data[0].email);
+          setDocId(data[0]._id);
+        }
+      } catch (err) {
+        console.log("Fetch error:", err);
       }
-    } catch (err) {
-      console.log("Fetch error:", err);
-    }
-  };
+    };
 
   const syncData = () => {
     localDB
@@ -122,16 +124,23 @@ const Form = () => {
 
   const updateData = async (e) => {
     e.preventDefault();
-    const newData = {
-      _id: new Date().toISOString(),
-      name: name,
-      email: email,
-    };
     try {
-      await localDB.put(newData);
+      if (docId) {
+        const doc = await localDB.get(docId);
+        doc.name = name;
+        doc.email = email;
+        await localDB.put(doc);
+      } else {
+        const newData = {
+          _id: new Date().toISOString(),
+          name: name,
+          email: email,
+        };
+        await localDB.put(newData);
+      }
       console.log("Data updated successfully");
     } catch (err) {
-      console.error("Add error:", err);
+      console.error("Update error:", err);
     }
   };
 
