@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
 import PouchDB from "pouchdb";
+import React, { useEffect, useState } from "react";
+import { BeatLoader } from "react-spinners";
 
 const Todo = () => {
   const [todos, setTodos] = useState([]);
@@ -107,7 +108,7 @@ const Todo = () => {
 
   const styles = {
     todoApp: {
-      width: "300px",
+      width: "400px",
       margin: "0 auto",
       textAlign: "center",
       fontFamily: "Arial, sans-serif",
@@ -167,20 +168,15 @@ const Todo = () => {
       backgroundColor: "#c82333",
     },
     loadingBar: {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 8,
-        backgroundColor: 'green',
-        color: '#fff'
-    }
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      height: 32,
+    },
   };
 
   return (
     <div style={styles.todoApp}>
-      {isSync && (
-        <div style={styles.loadingBar}>Sedang melakukan sinkronisasi..</div>
-      )}
       <h1 style={styles.title}>Todo App</h1>
       <form onSubmit={addTodo} style={styles.form}>
         <input
@@ -195,6 +191,11 @@ const Todo = () => {
         </button>
       </form>
       <ul style={styles.list}>
+        <div style={styles.loadingBar}>
+          {isSync && (
+            <BeatLoader color="#36d7b7" size={8}/>
+          )}
+        </div>
         {todos.map((todo) => (
           <li key={todo._id} style={styles.listItem}>
             <span
